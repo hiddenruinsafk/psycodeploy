@@ -21,24 +21,23 @@ const resizeImg = (file, max = 1400) => new Promise(res => {
 });
 
 const DEFAULT_SECTIONS = [
-  { id:"home",      title:"Benvenuti",                subtitle:"Un luogo di ascolto, cura e crescita personale",    content:"",              images:[], visible:true, order:0, type:"home",    builtin:true  },
-  { id:"chi-siamo", title:"Chi Siamo",                subtitle:"Il nostro team di professionisti",                  content:"",              images:[], visible:true, order:1, type:"content"               },
-  { id:"servizi",   title:"Attività e Servizi",       subtitle:"Come possiamo aiutarti nel tuo percorso",           content:"",              images:[], visible:true, order:2, type:"content"               },
-  { id:"prenota",   title:"Prenota un Appuntamento",  subtitle:"Il primo passo verso il cambiamento",               content:"",              images:[], visible:true, order:3, type:"booking", builtin:true  },
-  { id:"contatti",  title:"Contatti",                 subtitle:"Siamo qui per te",                                  content:"",              images:[], visible:true, order:4, type:"contact", builtin:true  },
+  { id:"home",      title:"Benvenuti",                subtitle:"Un luogo di ascolto, cura e crescita personale",    content:"", navLabel:"Home",        images:[], visible:true, order:0, type:"home",    builtin:true  },
+  { id:"chi-siamo", title:"Chi Siamo",                subtitle:"Il nostro team di professionisti",                  content:"", navLabel:"Chi Siamo",   images:[], visible:true, order:1, type:"content"               },
+  { id:"servizi",   title:"Attività e Servizi",       subtitle:"Come possiamo aiutarti nel tuo percorso",           content:"", navLabel:"Servizi",     images:[], visible:true, order:2, type:"content"               },
+  { id:"prenota",   title:"Prenota un Appuntamento",  subtitle:"Il primo passo verso il cambiamento",               content:"", navLabel:"Prenota",     images:[], visible:true, order:3, type:"booking", builtin:true  },
+  { id:"contatti",  title:"Contatti",                 subtitle:"Siamo qui per te",                                  content:"", navLabel:"Contatti",    images:[], visible:true, order:4, type:"contact", builtin:true  },
 ];
 
 /* ══════════════════════════════════════════════════════════════════
    FIREBASE
 ══════════════════════════════════════════════════════════════════ */
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyBaobQnc7StJuQogP3mwcFYOQc_Yoad-00",
-  authDomain: "psycodeploy.firebaseapp.com",
-  projectId: "psycodeploy",
-  storageBucket: "psycodeploy.firebasestorage.app",
+  apiKey:            "AIzaSyBaobQnc7StJuQogP3mwcFYOQc_Yoad-00",
+  authDomain:        "psycodeploy.firebaseapp.com",
+  projectId:         "psycodeploy",
+  storageBucket:     "psycodeploy.firebasestorage.app",
   messagingSenderId: "88393666938",
-  appId: "1:88393666938:web:48240219859fedc54e86c3",
-  measurementId: "G-PXJ4QMKJX3"
+  appId:             "1:88393666938:web:48240219859fedc54e86c3"
 };
 const _fbApp = initializeApp(FIREBASE_CONFIG);
 const _fs    = getFirestore(_fbApp);
@@ -457,7 +456,7 @@ function PublicSite({ sections, heroImages, config, onLogoClick }) {
           <nav className="nav">
             {visible.map(s => (
               <button key={s.id} className={`nav-btn${active===s.id?" on":""}`} onClick={()=>scrollTo(s.id)}>
-                {s.title}
+                {s.navLabel || s.title}
               </button>
             ))}
           </nav>
@@ -585,6 +584,7 @@ function AdminSectionForm({ section, onSave, onDone }) {
   const isNew = !section;
   const [form, setForm] = useState({
     title:    section?.title    || "",
+    navLabel: section?.navLabel || "",
     subtitle: section?.subtitle || "",
     content:  section?.content  || "",
     type:     section?.type     || "content",
@@ -649,7 +649,8 @@ function AdminSectionForm({ section, onSave, onDone }) {
         </div>
       )}
 
-      <div style={{ marginBottom:14 }}><label className="lbl">Titolo *</label><input className="field" value={form.title} onChange={upd("title")} placeholder="Titolo della sezione" /></div>
+      <div style={{ marginBottom:14 }}><label className="lbl">Titolo della Sezione *</label><input className="field" value={form.title} onChange={upd("title")} placeholder="Titolo visualizzato nella pagina" /></div>
+      <div style={{ marginBottom:14 }}><label className="lbl">Etichetta Navbar</label><input className="field" value={form.navLabel} onChange={upd("navLabel")} placeholder={form.title || "Testo del pulsante nel menu (se vuoto usa il titolo)"} /></div>
       <div style={{ marginBottom:14 }}><label className="lbl">Sottotitolo</label><input className="field" value={form.subtitle} onChange={upd("subtitle")} placeholder="Frase descrittiva breve" /></div>
       <div style={{ marginBottom:14 }}><label className="lbl">Contenuto</label><textarea className="field" value={form.content} onChange={upd("content")} rows={5} style={{ resize:"vertical" }} placeholder="Testo della sezione..." /></div>
 
