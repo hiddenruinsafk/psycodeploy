@@ -32,12 +32,12 @@ const DEFAULT_SECTIONS = [
    FIREBASE
 ══════════════════════════════════════════════════════════════════ */
 const FIREBASE_CONFIG = {
-  apiKey:            "REPLACE_API_KEY",
-  authDomain:        "REPLACE_AUTH_DOMAIN",
-  projectId:         "REPLACE_PROJECT_ID",
-  storageBucket:     "REPLACE_STORAGE_BUCKET",
-  messagingSenderId: "REPLACE_MESSAGING_ID",
-  appId:             "REPLACE_APP_ID"
+  apiKey:            "AIzaSyBaobQnc7StJuQogP3mwcFYOQc_Yoad-00",
+  authDomain:        "psycodeploy.firebaseapp.com",
+  projectId:         "psycodeploy",
+  storageBucket:     "psycodeploy.firebasestorage.app",
+  messagingSenderId: "88393666938",
+  appId:             "1:88393666938:web:48240219859fedc54e86c3"
 };
 const _fbApp = initializeApp(FIREBASE_CONFIG);
 const _fs    = getFirestore(_fbApp);
