@@ -27,6 +27,8 @@ const DEFAULT_SERVICES = [
   "Supporto psicologico",
   "Altro"
 ];
+
+const DEFAULT_SECTIONS = [
   { id:"home",      title:"Benvenuti",                subtitle:"Un luogo di ascolto, cura e crescita personale",    content:"", navLabel:"Home",        images:[], visible:true, order:0, type:"home",    builtin:true  },
   { id:"chi-siamo", title:"Chi Siamo",                subtitle:"Il nostro team di professionisti",                  content:"", navLabel:"Chi Siamo",   images:[], visible:true, order:1, type:"content"               },
   { id:"servizi",   title:"Attività e Servizi",       subtitle:"Come possiamo aiutarti nel tuo percorso",           content:"", navLabel:"Servizi",     images:[], visible:true, order:2, type:"content"               },
