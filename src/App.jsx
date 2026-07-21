@@ -20,7 +20,13 @@ const resizeImg = (file, max = 1400) => new Promise(res => {
   img.src = URL.createObjectURL(file);
 });
 
-const DEFAULT_SECTIONS = [
+const DEFAULT_SERVICES = [
+  "Colloquio individuale",
+  "Terapia di coppia",
+  "Psicologia dell'età evolutiva",
+  "Supporto psicologico",
+  "Altro"
+];
   { id:"home",      title:"Benvenuti",                subtitle:"Un luogo di ascolto, cura e crescita personale",    content:"", navLabel:"Home",        images:[], visible:true, order:0, type:"home",    builtin:true  },
   { id:"chi-siamo", title:"Chi Siamo",                subtitle:"Il nostro team di professionisti",                  content:"", navLabel:"Chi Siamo",   images:[], visible:true, order:1, type:"content"               },
   { id:"servizi",   title:"Attività e Servizi",       subtitle:"Come possiamo aiutarti nel tuo percorso",           content:"", navLabel:"Servizi",     images:[], visible:true, order:2, type:"content"               },
@@ -195,6 +201,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); font
 .b-field { width:100%; padding:14px 18px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.22); color:#fff; font-family:var(--sans); font-size:14px; font-weight:300; border-radius:2px; outline:none; transition:border-color var(--t); }
 .b-field::placeholder { color:rgba(255,255,255,.45); }
 .b-field:focus { border-color:rgba(255,255,255,.55); }
+.b-field.b-err { border-color:#ffb3a7; }
 .b-field option { color:var(--text); background:#fff; }
 
 /* ── CONTACT ── */
@@ -370,15 +377,31 @@ function BookingForm({ config }) {
   const [form, setForm] = useState({ name:"", email:"", phone:"", service:"", date:"", message:"" });
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
-  const upd = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
+  const [errors, setErrors] = useState({});
+  const upd = k => e => { setForm(f => ({ ...f, [k]: e.target.value })); setErrors(e => ({ ...e, [k]: null })); };
+
+  const today = new Date().toISOString().split("T")[0];
+
+  const validate = () => {
+    const e = {};
+    if (!form.name.trim()) e.name = "Nome obbligatorio";
+    if (!form.email.trim()) e.email = "Email obbligatoria";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Inserisci un'email valida";
+    if (form.phone && !/^[\+]?[\d\s\-\(\)]{7,15}$/.test(form.phone.trim())) e.phone = "Formato non valido (es. +39 320 0000000)";
+    if (form.date && form.date < today) e.date = "Non puoi prenotare una data nel passato";
+    return e;
+  };
 
   const submit = async () => {
-    if (!form.name || !form.email) return;
+    const e = validate();
+    if (Object.keys(e).length > 0) { setErrors(e); return; }
     setBusy(true);
     await sendBooking(config, form);
     setBusy(false); setDone(true);
-    setTimeout(() => { setDone(false); setForm({ name:"", email:"", phone:"", service:"", date:"", message:"" }); }, 4000);
+    setTimeout(() => { setDone(false); setForm({ name:"", email:"", phone:"", service:"", date:"", message:"" }); setErrors({}); }, 4000);
   };
+
+  const Err = ({ k }) => errors[k] ? <p style={{ fontSize:11, color:"#ffb3a7", marginTop:5 }}>{errors[k]}</p> : null;
 
   if (done) return (
     <div style={{ textAlign:"center", padding:"48px 0" }}>
@@ -391,26 +414,32 @@ function BookingForm({ config }) {
   return (
     <div>
       <div className="b-grid">
-        {[["Nome e Cognome *","text","name","Mario Rossi"],["Email *","email","email","mario@email.it"],["Telefono","text","phone","+39 320 0000000"],].map(([lbl,type,key,ph]) => (
-          <div key={key}>
-            <label className="lbl" style={{ color:"rgba(255,255,255,.55)" }}>{lbl}</label>
-            <input className="b-field" type={type} value={form[key]} onChange={upd(key)} placeholder={ph} />
-          </div>
-        ))}
+        <div>
+          <label className="lbl" style={{ color:"rgba(255,255,255,.55)" }}>Nome e Cognome *</label>
+          <input className={`b-field${errors.name?" b-err":""}`} value={form.name} onChange={upd("name")} placeholder="Mario Rossi" />
+          <Err k="name" />
+        </div>
+        <div>
+          <label className="lbl" style={{ color:"rgba(255,255,255,.55)" }}>Email *</label>
+          <input className={`b-field${errors.email?" b-err":""}`} type="email" value={form.email} onChange={upd("email")} placeholder="mario@email.it" />
+          <Err k="email" />
+        </div>
+        <div>
+          <label className="lbl" style={{ color:"rgba(255,255,255,.55)" }}>Telefono</label>
+          <input className={`b-field${errors.phone?" b-err":""}`} value={form.phone} onChange={upd("phone")} placeholder="+39 320 0000000" />
+          <Err k="phone" />
+        </div>
         <div>
           <label className="lbl" style={{ color:"rgba(255,255,255,.55)" }}>Servizio di interesse</label>
           <select className="b-field" value={form.service} onChange={upd("service")}>
             <option value="">Seleziona...</option>
-            <option>Colloquio individuale</option>
-            <option>Terapia di coppia</option>
-            <option>Psicologia dell'età evolutiva</option>
-            <option>Supporto psicologico</option>
-            <option>Altro</option>
+            {(config?.services || DEFAULT_SERVICES).map(s => <option key={s}>{s}</option>)}
           </select>
         </div>
         <div>
           <label className="lbl" style={{ color:"rgba(255,255,255,.55)" }}>Data preferita</label>
-          <input className="b-field" type="date" value={form.date} onChange={upd("date")} />
+          <input className={`b-field${errors.date?" b-err":""}`} type="date" value={form.date} onChange={upd("date")} min={today} />
+          <Err k="date" />
         </div>
       </div>
       <div style={{ marginBottom:28 }}>
@@ -804,9 +833,10 @@ function AdminSlideshow({ images, onSave }) {
    ADMIN SETTINGS
 ══════════════════════════════════════════════════════════════════ */
 function AdminSettings({ config, onSave }) {
-  const [f, setF] = useState({ name:"", address:"", phone:"", email:"", adminPassword:"", ownerEmail:"", svcId:"", tplId:"", pubKey:"", ...config });
+  const [f, setF] = useState({ name:"", address:"", phone:"", email:"", adminPassword:"", ownerEmail:"", svcId:"", tplId:"", pubKey:"", services: DEFAULT_SERVICES, ...config, services: (config?.services || DEFAULT_SERVICES) });
   const [ok, setOk] = useState(false);
   const upd = k => e => setF(p => ({ ...p, [k]: e.target.value }));
+  const updServices = e => setF(p => ({ ...p, services: e.target.value.split("\n").map(s => s.trim()).filter(Boolean) }));
   const save = async () => { await onSave(f); setOk(true); setTimeout(()=>setOk(false),2200); };
   const G = ({ label, k, type="text", ph="" }) => (
     <div><label className="lbl">{label}</label><input className="field" type={type} value={f[k]} onChange={upd(k)} placeholder={ph} /></div>
@@ -820,6 +850,11 @@ function AdminSettings({ config, onSave }) {
       <G label="Telefono" k="phone" ph="+39 02 0000000" />
       <G label="Email pubblica" k="email" ph="info@centroXYZ.it" />
       <G label="Password Admin" k="adminPassword" type="password" ph="Nuova password..." />
+      <div>
+        <label className="lbl">Servizi Prenotazione</label>
+        <p style={{ fontSize:11, color:"var(--muted)", marginBottom:8, lineHeight:1.6 }}>Un servizio per riga — appaiono nel menu a tendina del form di prenotazione.</p>
+        <textarea className="field" value={(f.services || DEFAULT_SERVICES).join("\n")} onChange={updServices} rows={6} style={{ resize:"vertical" }} />
+      </div>
       <div style={{ borderTop:"1px solid var(--border)", paddingTop:16 }}>
         <p style={{ fontSize:12, fontWeight:600, letterSpacing:".08em", textTransform:"uppercase", marginBottom:8 }}>Email Prenotazioni (EmailJS)</p>
         <p style={{ fontSize:12, color:"var(--muted)", lineHeight:1.7, marginBottom:14 }}>
