@@ -844,18 +844,14 @@ function AdminSettings({ config, onSave }) {
     await onSave({ ...f, services: processed });
     setOk(true); setTimeout(()=>setOk(false),2200);
   };
-  const G = ({ label, k, type="text", ph="" }) => (
-    <div><label className="lbl">{label}</label><input className="field" type={type} value={f[k]} onChange={upd(k)} placeholder={ph} /></div>
-  );
-
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
       <p style={{ fontSize:12, fontWeight:600, letterSpacing:".07em", textTransform:"uppercase", color:"var(--muted)", marginBottom:4 }}>Impostazioni</p>
-      <G label="Nome Centro" k="name" ph="Centro di Psicologia XYZ" />
-      <G label="Indirizzo" k="address" ph="Via Roma 1, 20121 Milano" />
-      <G label="Telefono" k="phone" ph="+39 02 0000000" />
-      <G label="Email pubblica" k="email" ph="info@centroXYZ.it" />
-      <G label="Password Admin" k="adminPassword" type="password" ph="Nuova password..." />
+      <div><label className="lbl">Nome Centro</label><input className="field" type="text" value={f.name} onChange={upd("name")} placeholder="Centro di Psicologia XYZ" /></div>
+      <div><label className="lbl">Indirizzo</label><input className="field" type="text" value={f.address} onChange={upd("address")} placeholder="Via Roma 1, 20121 Milano" /></div>
+      <div><label className="lbl">Telefono</label><input className="field" type="text" value={f.phone} onChange={upd("phone")} placeholder="+39 02 0000000" /></div>
+      <div><label className="lbl">Email pubblica</label><input className="field" type="email" value={f.email} onChange={upd("email")} placeholder="info@centroXYZ.it" /></div>
+      <div><label className="lbl">Password Admin</label><input className="field" type="password" value={f.adminPassword} onChange={upd("adminPassword")} placeholder="Nuova password..." /></div>
       <div>
         <label className="lbl">Servizi Prenotazione</label>
         <p style={{ fontSize:11, color:"var(--muted)", marginBottom:8, lineHeight:1.6 }}>Un servizio per riga — appaiono nel menu a tendina del form di prenotazione.</p>
@@ -867,10 +863,10 @@ function AdminSettings({ config, onSave }) {
           Configura <a href="https://emailjs.com" target="_blank" rel="noopener noreferrer" style={{ color:"var(--accent)" }}>emailjs.com</a> per ricevere le richieste di appuntamento via email.
         </p>
         <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-          <G label="Email ricezione prenotazioni" k="ownerEmail" type="email" ph="info@centroXYZ.it" />
-          <G label="EmailJS Service ID" k="svcId" ph="service_xxxxxxx" />
-          <G label="EmailJS Template ID" k="tplId" ph="template_xxxxxxx" />
-          <G label="EmailJS Public Key" k="pubKey" ph="xxxxxxxxxxxxxxxxxxxx" />
+          <div><label className="lbl">Email ricezione prenotazioni</label><input className="field" type="email" value={f.ownerEmail} onChange={upd("ownerEmail")} placeholder="info@centroXYZ.it" /></div>
+          <div><label className="lbl">EmailJS Service ID</label><input className="field" type="text" value={f.svcId} onChange={upd("svcId")} placeholder="service_xxxxxxx" /></div>
+          <div><label className="lbl">EmailJS Template ID</label><input className="field" type="text" value={f.tplId} onChange={upd("tplId")} placeholder="template_xxxxxxx" /></div>
+          <div><label className="lbl">EmailJS Public Key</label><input className="field" type="text" value={f.pubKey} onChange={upd("pubKey")} placeholder="xxxxxxxxxxxxxxxxxxxx" /></div>
         </div>
       </div>
       <button onClick={save} className="btn btn-d" style={{ width:"100%" }}>{ok?"✓ Salvato!":"Salva Impostazioni"}</button>
