@@ -649,8 +649,8 @@ function AdminSectionForm({ section, onSave, onDone }) {
         </div>
       )}
 
-      <div style={{ marginBottom:14 }}><label className="lbl">Titolo della Sezione *</label><input className="field" value={form.title} onChange={upd("title")} placeholder="Titolo visualizzato nella pagina" /></div>
       <div style={{ marginBottom:14 }}><label className="lbl">Etichetta Navbar</label><input className="field" value={form.navLabel} onChange={upd("navLabel")} placeholder={form.title || "Testo del pulsante nel menu (se vuoto usa il titolo)"} /></div>
+      <div style={{ marginBottom:14 }}><label className="lbl">Titolo della Sezione *</label><input className="field" value={form.title} onChange={upd("title")} placeholder="Titolo visualizzato nella pagina" /></div>
       <div style={{ marginBottom:14 }}><label className="lbl">Sottotitolo</label><input className="field" value={form.subtitle} onChange={upd("subtitle")} placeholder="Frase descrittiva breve" /></div>
       <div style={{ marginBottom:14 }}><label className="lbl">Contenuto</label><textarea className="field" value={form.content} onChange={upd("content")} rows={5} style={{ resize:"vertical" }} placeholder="Testo della sezione..." /></div>
 
