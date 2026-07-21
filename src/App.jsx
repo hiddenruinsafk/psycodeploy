@@ -836,10 +836,14 @@ function AdminSlideshow({ images, onSave }) {
 ══════════════════════════════════════════════════════════════════ */
 function AdminSettings({ config, onSave }) {
   const [f, setF] = useState({ name:"", address:"", phone:"", email:"", adminPassword:"", ownerEmail:"", svcId:"", tplId:"", pubKey:"", services: DEFAULT_SERVICES, ...config, services: (config?.services || DEFAULT_SERVICES) });
+  const [servicesText, setServicesText] = useState((config?.services || DEFAULT_SERVICES).join("\n"));
   const [ok, setOk] = useState(false);
   const upd = k => e => setF(p => ({ ...p, [k]: e.target.value }));
-  const updServices = e => setF(p => ({ ...p, services: e.target.value.split("\n").map(s => s.trim()).filter(Boolean) }));
-  const save = async () => { await onSave(f); setOk(true); setTimeout(()=>setOk(false),2200); };
+  const save = async () => {
+    const processed = servicesText.split("\n").map(s => s.trim()).filter(Boolean);
+    await onSave({ ...f, services: processed });
+    setOk(true); setTimeout(()=>setOk(false),2200);
+  };
   const G = ({ label, k, type="text", ph="" }) => (
     <div><label className="lbl">{label}</label><input className="field" type={type} value={f[k]} onChange={upd(k)} placeholder={ph} /></div>
   );
@@ -855,7 +859,7 @@ function AdminSettings({ config, onSave }) {
       <div>
         <label className="lbl">Servizi Prenotazione</label>
         <p style={{ fontSize:11, color:"var(--muted)", marginBottom:8, lineHeight:1.6 }}>Un servizio per riga — appaiono nel menu a tendina del form di prenotazione.</p>
-        <textarea className="field" value={(f.services || DEFAULT_SERVICES).join("\n")} onChange={updServices} rows={6} style={{ resize:"vertical" }} />
+        <textarea className="field" value={servicesText} onChange={e => setServicesText(e.target.value)} rows={6} style={{ resize:"vertical" }} />
       </div>
       <div style={{ borderTop:"1px solid var(--border)", paddingTop:16 }}>
         <p style={{ fontSize:12, fontWeight:600, letterSpacing:".08em", textTransform:"uppercase", marginBottom:8 }}>Email Prenotazioni (EmailJS)</p>
